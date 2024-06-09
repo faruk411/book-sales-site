@@ -1,0 +1,57 @@
+﻿@model ProductDtoForInsertion
+
+<div class="text-center">
+    <div class="display-6">Ürün Oluştur</div>
+</div>
+
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+
+    <div class="form-group my-3">
+        <label asp-for="CategoryId"></label>
+        <select class="form-control" asp-items="@ViewBag.Categories" asp-for="CategoryId">
+        </select>
+    </div>
+
+    <div class="text-danger" asp-validation-summary="All"></div>
+    <div class="form-group my-3">
+        <label asp-for="ProductName"></label>
+        <input asp-for="ProductName" class="form-control" />
+    </div>
+
+    <div class="form-group my-3">
+        <label asp-for="Summary"></label>
+        <input asp-for="Summary" class="form-control" />
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="Yayıncı"></label>
+        <input asp-for="Yayıncı" class="form-control" />
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="Yazar"></label>
+        <input asp-for="Yazar" class="form-control" />
+    </div>
+
+    <div class="form-group my-3">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="Vitrin"></label>
+        <input class="form-check-input" type="checkbox" asp-for="Vitrin" />
+    </div>
+    <div class="form-group my-3">
+        <label asp-for="ImageUrl"></label>
+        <input name="file" type="file" class="form-control" />
+    </div>
+
+    <div class="form-group my-3">
+        <div class=" btn-group">
+          <button class="btn btn-primary" type="submit">
+                <i class="fa-solid fa-hard-drive"></i>
+              Kaydet</button>
+              <a asp-action="Index" class="btn btn-outline-primary">
+                  <i class="fa fa-list"></i>
+                  Ürünler</a>
+        </div>
+    </div>
+</form>

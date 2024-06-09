@@ -1,0 +1,40 @@
+﻿@model Order
+
+@{
+    var total = Model.Lines.Sum(c => c.Product.Price * c.Quantity);
+}
+
+<div class="row shadow my-3">
+    <div class="col-md-3 border-1 border-dark p-3 bg-light shadow">
+        <h5 class="display-6 text-center">
+            <i class="fa fa-address-book text-danger"></i>
+            <br/>
+            @Model.Name @Model.Soyad
+        </h5>       
+        <p>@Model?.Eposta</p>
+        <p>@Model?.Address</p>
+        <p>@Model?.Sehir</p>
+
+    </div>
+    <div class="col-md-9">
+        <h6 class="display-6 mt-3 text-center">
+            Ürünler
+        </h6>
+        <ul class="list-group">
+            @foreach(var cartItem in Model?.Lines)
+            {
+                <li class="list-group-item d-flex justify-content-between brand">
+                    @cartItem.Product.ProductName
+                    <b>
+                        @cartItem.Quantity * @cartItem.Product.Price.ToString("C2") = @((cartItem.Quantity*cartItem.Product.Price).ToString("C2"))
+                    </b>
+                </li>
+            }
+            <li class="list-group-item d-flex justify-content-between text-danger">
+                Toplam
+                <b>@total.ToString("C2")</b>
+            </li>
+
+        </ul>
+    </div>
+</div>
