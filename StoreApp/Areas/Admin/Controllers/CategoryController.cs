@@ -1,13 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Entities.Models;
+using Microsoft.AspNetCore.Mvc;
+using Repositories.Contracts;
 
-namespace StoreApp.Areas.Admin.Controllers
+namespace StoreApp.Controllers
 {
-    [Area("Admin")]
     public class CategoryController : Controller
     {
-        public IActionResult Index()
+        private IRepositoryManager _manager;
+
+        public CategoryController(IRepositoryManager manager)
         {
-            return View();
+            _manager = manager;
+        }
+
+        public IActionResult Index() 
+        {
+            var model =  _manager.Category.FindAll(false);
+            return View(model);
+
         }
     }
 }

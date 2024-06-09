@@ -1,15 +1,17 @@
-﻿using Entities.Dtos;
-using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Entities.Models;
+using Repositories;
+using Repositories.Contracts;
 using Services.Contracts;
+using Entities.RequestParameters;
+using StoreApp.Models;
 
-namespace StoreApp.Areas.Admin.Controllers
+
+namespace StoreApp.Controllers
 {
-    [Area("Admin")]
     public class ProductController : Controller
     {
-
         private readonly IServiceManager _manager;
 
         public ProductController(IServiceManager manager)
@@ -17,81 +19,25 @@ namespace StoreApp.Areas.Admin.Controllers
             _manager = manager;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(ProductRequestParameters p)
         {
-            var model = _manager.productService.GetAllProducts(false);
+            var products = _manager.productService.GetAllProductsWithDetails(p);
+            var pagination = new Pagination()
+            {
+                CurrenPage = p.PageNumber,
+                ItemsPerPage = p.PageSize,
+                TotalItems = _manager.productService.GetAllProducts(false).Count()
+            };
+           return View(new ProductListViewModel()
+           {
+               Products = products,
+               Pagination = pagination
+           });
+        }
+        public IActionResult Get([FromRoute(Name ="id")] int id)
+        {
+            var model = _manager.productService.GetOneProduct(id,false);
             return View(model);
         }
-        public IActionResult Create()
-        {
-            ViewBag.Categories = GetCategoriesSelectList();
-            return View();
-
-        }
-        private SelectList GetCategoriesSelectList()
-        {
-            return new SelectList(_manager.categoryService.GetAllCategories(false), "CategoryId", "CategoryName", "1");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] ProductDtoForInsertion productDto, IFormFile file)
-        {
-            if (ModelState.IsValid)
-            {
-                // file operation
-                string path = Path.Combine(Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "images",
-                    file.FileName
-                    );
-                using (var stream = new FileStream(path,FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                productDto.ImageUrl = String.Concat("/images/", file.FileName);
-                _manager.productService.CreateProduct(productDto);
-                return RedirectToAction("Index");
-            }
-            return View();
-
-        }
-        public IActionResult Update([FromRoute(Name = "id")] int id)
-        {
-            ViewBag.Categories = GetCategoriesSelectList();
-            var model = _manager.productService.GetOneProductForUpdate(id, false);
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update([FromForm] ProductDtoForUpdate productDto, IFormFile file)
-        {
-            if(ModelState.IsValid)
-            {
-                // file operation
-                string path = Path.Combine(Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "images",
-                    file.FileName
-                    );
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                productDto.ImageUrl = String.Concat("/images/", file.FileName);
-                _manager.productService.UpdateOneProduct(productDto);
-                return RedirectToAction("Index");
-            }
-            return View();
-
-        }
-        [HttpGet]
-        public IActionResult Delete([FromRoute(Name ="id")] int id) 
-        {
-            _manager.productService.DeleteOneProduct(id);
-            return RedirectToAction("Index");
-        }
-
     }
 }
